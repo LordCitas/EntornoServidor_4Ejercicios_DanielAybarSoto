@@ -1,5 +1,5 @@
 <?php
-$ejercicio = 2;
+$ejercicio = 3;
 
 try {
     switch ($ejercicio) {
@@ -86,22 +86,50 @@ try {
             break;
 
         case 3:
-            //productos.php
+            // El array de productos
             $productos = [
                 ["id" => 1, "nombre" => "Laptop", "precio" => 899.99, "stock" => 10],
                 ["id" => 2, "nombre" => "Teléfono", "precio" => 499.50, "stock" => 15],
                 ["id" => 3, "nombre" => "Tablet", "precio" => 349.99, "stock" => 5]
             ];
 
-            // Filtrar productos con precio > 400
-            $caros = array_filter($productos, fn($p) => $p["precio"] > 400);
+            // Una función que filtra productos con precio > 400
+            function filtrarPrecioMayorQue400($productos) {
+                return array_filter($productos, fn($p) => $p["precio"] > 400);
+            }
 
-            // Ordenar por precio (ascendente)
-            usort($productos, fn($a, $b) => $a["precio"] <=> $b["precio"]);
+            $caros = filtrarPrecioMayorQue400($productos);
 
-            // Calcular valor total del inventario
-            $valorTotal = array_reduce($productos, fn($total, $p) => $total + ($p["precio"] * $p["stock"]), 0);
+            // Una función que ordena el array por precio (ascendente)
+            function ordenarPorPrecioAsc($productos): void {
+                usort($productos, fn($a, $b) => $a["precio"] <=> $b["precio"]);
+            }
+
+            ordenarPorPrecioAsc($productos);
+            print_r($productos);
+
+            // Una función que calcula el valor total del inventario
+            function calcularValorTotalInventario($productos): float {
+                return array_reduce($productos, fn($total, $p) => $total + ($p["precio"] * $p["stock"]), 0);
+            }
+
+            $valorTotal = calcularValorTotalInventario($productos);
+            echo "Valor total del inventario: $" . $valorTotal;
             break;
+
+            //Una función que busca por coincidencia parcial con el nombre del producto
+            function buscarPorNombre($productos, $secuencia) {
+                foreach ($productos as $producto) {
+                    if(str_contains($producto["nombre"], $secuencia){
+                        return 1;
+                    }
+                }
+                return array_filter($productos, fn($p) => stripos($p["nombre"], $secuencia) !== false);
+            }
+
+            $secuencia = "Lap";
+            $resultados = buscarPorNombre($productos, $secuencia);
+            print_r($resultados);
 
         case 4:
             break;
