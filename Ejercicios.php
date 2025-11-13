@@ -115,13 +115,15 @@ try {
 
             $valorTotal = calcularValorTotalInventario($productos);
             echo "Valor total del inventario: $" . $valorTotal;
-            break;
+
 
             //Una función que busca por coincidencia parcial con el nombre del producto
             function buscarPorNombre($productos, $secuencia) {
                 foreach ($productos as $producto) {
-                    if(str_contains($producto["nombre"], $secuencia){
+                    if(str_contains($producto["nombre"], $secuencia)){
                         return 1;
+                    } else {
+                        return 0;
                     }
                 }
                 return array_filter($productos, fn($p) => stripos($p["nombre"], $secuencia) !== false);
@@ -129,7 +131,9 @@ try {
 
             $secuencia = "Lap";
             $resultados = buscarPorNombre($productos, $secuencia);
+            echo "HOLAAAAAA";
             print_r($resultados);
+            break;
 
         case 4:
             break;
