@@ -86,39 +86,68 @@ try {
             break;
 
         case 3:
+            $nl = (php_sapi_name() === 'cli') ? PHP_EOL : "<br>\n";
+
+            //Función para imprimir un array
+            function imprimirArray($array): void{
+                //una variable que imprime un salto de línea adecuado según el entorno
+                $nl = (php_sapi_name() === 'cli') ? PHP_EOL : "<br>\n";
+                $longitud = count($array) - 1;
+
+                //Empezamos a imprimir el array
+                echo "[";
+                //Recorremos el array e imprimimos sus elementos
+                for($i = 0; $i < $longitud; $i++){
+                    print_r($array[$i]);
+                    echo "," . $nl;
+                }
+                //Terminamos la impresión del array
+                print_r($array[$longitud]);
+                echo "]" . $nl;
+            }
+
             // El array de productos
             $productos = [
                 ["id" => 1, "nombre" => "Laptop", "precio" => 899.99, "stock" => 10],
                 ["id" => 2, "nombre" => "Teléfono", "precio" => 499.50, "stock" => 15],
                 ["id" => 3, "nombre" => "Tablet", "precio" => 349.99, "stock" => 5]
             ];
+            // Imprimimos el array original
+            echo "Array original:" . $nl;
+            imprimirArray($productos);
 
             // Una función que filtra productos con precio > 400
             function filtrarPrecioMayorQue400($productos) {
                 return array_filter($productos, fn($p) => $p["precio"] > 400);
             }
 
+            // Probamos la función de filtrado y mostramos el resultado
             $caros = filtrarPrecioMayorQue400($productos);
+            echo "Productos con precio mayor que 400:" . $nl;
+            imprimirArray($caros);
 
             // Una función que ordena el array por precio (ascendente)
             function ordenarPorPrecioAsc($productos): void {
                 usort($productos, fn($a, $b) => $a["precio"] <=> $b["precio"]);
             }
 
+            // Probamos la función de ordenación y mostramos el resultado
+            echo "Productos ordenados por precio (ascendente):" . $nl;
             ordenarPorPrecioAsc($productos);
-            print_r($productos);
+            imprimirArray($productos);
 
             // Una función que calcula el valor total del inventario
             function calcularValorTotalInventario($productos): float {
                 return array_reduce($productos, fn($total, $p) => $total + ($p["precio"] * $p["stock"]), 0);
             }
 
+            // Probamos la función de cálculo del valor total del inventario y mostramos el resultado
             $valorTotal = calcularValorTotalInventario($productos);
             echo "Valor total del inventario: $" . $valorTotal;
 
 
             //Una función que busca por coincidencia parcial con el nombre del producto
-            function buscarPorNombre($productos, $secuencia) {
+            /*function buscarPorNombre($productos, $secuencia): bool {
                 foreach ($productos as $producto) {
                     if(str_contains($producto["nombre"], $secuencia)){
                         return 1;
@@ -127,12 +156,17 @@ try {
                     }
                 }
                 return array_filter($productos, fn($p) => stripos($p["nombre"], $secuencia) !== false);
+            }*/
+
+            function buscarPorNombre($productos, $secuencia): array {
+                return array_filter($productos, fn($p) => stripos($p["nombre"], $secuencia) !== false);
             }
 
-            $secuencia = "Lap";
+            // Probamos la función de búsqueda por nombre y mostramos el resultado
+            $secuencia = "o";
             $resultados = buscarPorNombre($productos, $secuencia);
-            echo "HOLAAAAAA";
-            print_r($resultados);
+            echo $nl . "Resultados de la búsqueda parcial en los nombres con la secuencia '$secuencia':" . $nl;
+            imprimirArray($resultados);
             break;
 
         case 4:
