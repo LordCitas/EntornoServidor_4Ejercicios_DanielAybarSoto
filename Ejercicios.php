@@ -1,33 +1,66 @@
 <?php
-$ejercicio = 3;
+$ejercicio = 4;
 
 try {
     switch ($ejercicio) {
         case 1:
             $operacion = "modulo";
-            $num1 = 7;
-            $num2 = 5;
-            function calcular($num1, $num2, $operacion){
+            $num1 = 3;
+            $num2 = 0.4;
+
+            function sumar($num1, $num2){
+                return $num1 + $num2;
+            }
+
+            function restar($num1, $num2){
+                return $num1 - $num2;
+            }
+
+            function multiplicar($num1, $num2){
+                return $num1 * $num2;
+            }
+
+            //A partir de aquí, las funciones pueden dar errores, así que lanzan excepciones
+            function dividir($num1, $num2){
+                if ($num2 == 0) {
+                    throw new InvalidArgumentException("Error: No se puede dividir por 0");
+                }
+                return $num1 / $num2;
+            }
+
+            function potencia($num1, $num2){
+                if($num1 == 0 && $num2 == 0){
+                    throw new InvalidArgumentException("Error: 0 no se puede elevar a 0");
+                } else if ($num1 < 0 && $num2 < 1 && $num2 > -1 && $num2 != 0){
+                    throw new InvalidArgumentException("Error: No se puede elevar un número negativo a una potencia dentro del intervalo (-1,0)u(0,1)");
+                }
+                return pow($num1, $num2);
+            }
+
+            function raizCuadrada($num1){
+                if($num1 < 0){
+                    throw new InvalidArgumentException("Error: No se puede calcular la raíz cuadrada de un número negativo");
+                }
+                return pow($num1, 1/2);
+            }
+
+            function modulo($num1, $num2): float{
+                if ((int)$num2 == 0) {
+                    throw new InvalidArgumentException("Error: No se puede calcular el módulo con divisor 0");
+                }
+                return $num1 % $num2;
+            }
+
+            function calcular($num1, $num2, $operacion)
+            {
                 return match ($operacion) {
-                    'suma' => $num1 + $num2,
-                    'resta' => $num1 - $num2,
-                    'multiplicacion' => $num1 * $num2,
-
-                    //Cambio la expresión del error para que sea una excepción
-                    'division' => $num2 != 0 ? $num1 / $num2 : throw new InvalidArgumentException("Error: No se puede dividir por 0"),
-
-                    //Uso de match anidado para manejar múltiples condiciones de error en la potencia
-                    'potencia' => match (true){
-                        $num1 == 0 && $num2 == 0 => throw new InvalidArgumentException("Error: 0 no se puede elevar a 0"),
-                        $num1 < 0 && $num2 < 1 && $num2 > -1 && $num2 != 0 => throw new InvalidArgumentException("Error: No se puede elevar un número negativo a una potencia dentro del intervalo (-1,0)u(0,1)"),
-                        default => pow($num1, $num2)
-                    },
-
-                    //La raíz cuadrada solo da error si el número es negativo
-                    'raizCuadrada' => $num1 > 0 ? pow($num1, 1 / 2) : throw new InvalidArgumentException("Error: No se puede calcular la raíz cuadrada de un número negativo"),
-
-                    //El módulo solo da error si el divisor es 0
-                    'modulo' => $num2 != 0 ? $num1 % $num2 : throw new InvalidArgumentException("Error: No se puede calcular el módulo con divisor 0"),
+                    'suma' => sumar($num1, $num2),
+                    'resta' => restar($num1, $num2),
+                    'multiplicacion' => multiplicar($num1, $num2),
+                    'division' => dividir($num1, $num2),
+                    'potencia' => potencia($num1, $num2),
+                    'raizCuadrada' => raizCuadrada($num1),
+                    'modulo' => modulo($num1, $num2),
                     default => "Operación no válida"
                 };
             }
@@ -39,27 +72,33 @@ try {
 
         case 2:
             //Una clase para validar formularios
-            class ValidadorFormulario {
-                public static function validarEmail($email): bool {
+            class ValidadorFormulario
+            {
+                public static function validarEmail($email): bool
+                {
                     return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
                 }
 
-                public static function validarNombre($nombre): bool {
+                public static function validarNombre($nombre): bool
+                {
                     return strlen($nombre) >= 2 && preg_match('/^[a-zA-Z\s]+$/', $nombre);
                 }
 
-                public static function validarTelefono($telefono): bool {
+                public static function validarTelefono($telefono): bool
+                {
                     return preg_match('/^[0-9]{9}$/', $telefono);
                 }
 
-                public static function validarClave($clave): bool {
+                public static function validarClave($clave): bool
+                {
                     // Al menos 8 caracteres, una mayúscula, una minúscula y un número
                     return strlen($clave) >= 8 && preg_match('/[A-Z]/', $clave) && preg_match('/[a-z]/', $clave) && preg_match('/[0-9]/', $clave);
                 }
 
                 //Encapsulamos todas las llamadas a los métodos de validaciones en uno solo
-                public static function validadorFormulario($email, $nombre, $telefono, $clave): bool {
-                    return match (false){
+                public static function validadorFormulario($email, $nombre, $telefono, $clave): bool
+                {
+                    return match (false) {
                         self::validarEmail($email) => throw new InvalidArgumentException("Error: El email no es válido"),
                         self::validarNombre($nombre) => throw new InvalidArgumentException("Error: El nombre no es válido"),
                         self::validarTelefono($telefono) => throw new InvalidArgumentException("Error: El teléfono no es válido"),
@@ -89,7 +128,8 @@ try {
             $nl = (php_sapi_name() === 'cli') ? PHP_EOL : "<br>\n";
 
             //Función para imprimir un array
-            function imprimirArray($array): void{
+            function imprimirArray($array): void
+            {
                 //una variable que imprime un salto de línea adecuado según el entorno
                 $nl = (php_sapi_name() === 'cli') ? PHP_EOL : "<br>\n";
                 $longitud = count($array) - 1;
@@ -97,7 +137,7 @@ try {
                 //Empezamos a imprimir el array
                 echo "[";
                 //Recorremos el array e imprimimos sus elementos
-                for($i = 0; $i < $longitud; $i++){
+                for ($i = 0; $i < $longitud; $i++) {
                     print_r($array[$i]);
                     echo "," . $nl;
                 }
@@ -117,7 +157,8 @@ try {
             imprimirArray($productos);
 
             // Una función que filtra productos con precio > 400
-            function filtrarPrecioMayorQue400($productos) {
+            function filtrarPrecioMayorQue400($productos)
+            {
                 return array_filter($productos, fn($p) => $p["precio"] > 400);
             }
 
@@ -127,7 +168,8 @@ try {
             imprimirArray($caros);
 
             // Una función que ordena el array por precio (ascendente)
-            function ordenarPorPrecioAsc($productos): void {
+            function ordenarPorPrecioAsc($productos): void
+            {
                 usort($productos, fn($a, $b) => $a["precio"] <=> $b["precio"]);
             }
 
@@ -137,7 +179,8 @@ try {
             imprimirArray($productos);
 
             // Una función que calcula el valor total del inventario
-            function calcularValorTotalInventario($productos): float {
+            function calcularValorTotalInventario($productos): float
+            {
                 return array_reduce($productos, fn($total, $p) => $total + ($p["precio"] * $p["stock"]), 0);
             }
 
@@ -158,7 +201,8 @@ try {
                 return array_filter($productos, fn($p) => stripos($p["nombre"], $secuencia) !== false);
             }*/
 
-            function buscarPorNombre($productos, $secuencia): array {
+            function buscarPorNombre($productos, $secuencia): array
+            {
                 return array_filter($productos, fn($p) => stripos($p["nombre"], $secuencia) !== false);
             }
 
@@ -170,6 +214,36 @@ try {
             break;
 
         case 4:
+            function analizarTexto($texto): array{
+                // Limpiar y dividir el texto en palabras
+                $texto = strtolower($texto);
+                $texto = preg_replace('/[^\w\s]/', '', $texto);
+                $palabras = preg_split('/\s+/', $texto, -1, PREG_SPLIT_NO_EMPTY);
+
+                // Contar palabras
+                $totalPalabras = count($palabras);
+
+                // Frecuencia de palabras
+                $frecuencia = array_count_values($palabras);
+                arsort($frecuencia);  // Ordenar por frecuencia
+
+                // Longitud promedio
+                $longitudTotal = array_reduce($palabras, fn($total, $p) => $total + strlen($p), 0
+                );
+                $longitudPromedio = ($totalPalabras > 0)? $longitudTotal / $totalPalabras : 0;
+
+                //Devolvemos los resultados en un array asociativo
+                return [
+                    'total_palabras' => $totalPalabras,
+                    'frecuencia' => $frecuencia,
+                    'longitud_promedio' => $longitudPromedio
+                ];
+            }
+
+            // Texto de prueba
+            $texto = "Este es un texto de prueba. Este texto sirve para probar el análisis de texto. Texto de prueba, análisis de texto.";
+            $resultado = analizarTexto($texto);
+            print_r($resultado);
             break;
     }
 }catch (InvalidArgumentException $e) {
