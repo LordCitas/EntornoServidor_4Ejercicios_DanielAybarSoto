@@ -1,5 +1,5 @@
 <?php
-$ejercicio = 1;
+$ejercicio = 2;
 
 try {
     switch ($ejercicio) {
@@ -7,19 +7,26 @@ try {
             $operacion = "modulo";
             $num1 = 7;
             $num2 = 5;
-            function calcular($num1, $num2, $operacion)
-            {
+            function calcular($num1, $num2, $operacion){
                 return match ($operacion) {
                     'suma' => $num1 + $num2,
                     'resta' => $num1 - $num2,
                     'multiplicacion' => $num1 * $num2,
+
+                    //Cambio la expresión del error para que sea una excepción
                     'division' => $num2 != 0 ? $num1 / $num2 : throw new InvalidArgumentException("Error: No se puede dividir por 0"),
+
+                    //Uso de match anidado para manejar múltiples condiciones de error en la potencia
                     'potencia' => match (true){
                         $num1 == 0 && $num2 == 0 => throw new InvalidArgumentException("Error: 0 no se puede elevar a 0"),
                         $num1 < 0 && $num2 < 1 && $num2 > -1 && $num2 != 0 => throw new InvalidArgumentException("Error: No se puede elevar un número negativo a una potencia dentro del intervalo (-1,0)u(0,1)"),
                         default => pow($num1, $num2)
                     },
+
+                    //La raíz cuadrada solo da error si el número es negativo
                     'raizCuadrada' => $num1 > 0 ? pow($num1, 1 / 2) : throw new InvalidArgumentException("Error: No se puede calcular la raíz cuadrada de un número negativo"),
+
+                    //El módulo solo da error si el divisor es 0
                     'modulo' => $num2 != 0 ? $num1 % $num2 : throw new InvalidArgumentException("Error: No se puede calcular el módulo con divisor 0"),
                     default => "Operación no válida"
                 };
@@ -31,9 +38,69 @@ try {
             break;
 
         case 2:
+            //Una clase para validar formularios
+            class ValidadorFormulario {
+                public static function validarEmail($email): bool {
+                    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+                }
+
+                public static function validarNombre($nombre): bool {
+                    return strlen($nombre) >= 2 && preg_match('/^[a-zA-Z\s]+$/', $nombre);
+                }
+
+                public static function validarTelefono($telefono): bool {
+                    return preg_match('/^[0-9]{9}$/', $telefono);
+                }
+
+                public static function validarClave($clave): bool {
+                    // Al menos 8 caracteres, una mayúscula, una minúscula y un número
+                    return strlen($clave) >= 8 && preg_match('/[A-Z]/', $clave) && preg_match('/[a-z]/', $clave) && preg_match('/[0-9]/', $clave);
+                }
+
+                //Encapsulamos todas las llamadas a los métodos de validaciones en uno solo
+                public static function validadorFormulario($email, $nombre, $telefono, $clave): bool {
+                    return match (false){
+                        self::validarEmail($email) => throw new InvalidArgumentException("Error: El email no es válido"),
+                        self::validarNombre($nombre) => throw new InvalidArgumentException("Error: El nombre no es válido"),
+                        self::validarTelefono($telefono) => throw new InvalidArgumentException("Error: El teléfono no es válido"),
+                        self::validarClave($clave) => throw new InvalidArgumentException("Error: La clave no es válida"),
+                        default => true
+                    };
+                }
+            }
+
+            //Datos de prueba
+            $email = "email@gmail.com";
+            $nombre = "Juan Perez";
+            $telefono = "612345667";
+            $clave = "Password1";
+
+            //Validamos el formulario
+            if (ValidadorFormulario::validadorFormulario($email, $nombre, $telefono, $clave)) {
+                echo "Todos los campos son válidos." . PHP_EOL;
+            }
+
+            //Mensaje de prueba para comprobar que se lanzan las excepciones
+            //echo "hola";
+
             break;
 
         case 3:
+            //productos.php
+            $productos = [
+                ["id" => 1, "nombre" => "Laptop", "precio" => 899.99, "stock" => 10],
+                ["id" => 2, "nombre" => "Teléfono", "precio" => 499.50, "stock" => 15],
+                ["id" => 3, "nombre" => "Tablet", "precio" => 349.99, "stock" => 5]
+            ];
+
+            // Filtrar productos con precio > 400
+            $caros = array_filter($productos, fn($p) => $p["precio"] > 400);
+
+            // Ordenar por precio (ascendente)
+            usort($productos, fn($a, $b) => $a["precio"] <=> $b["precio"]);
+
+            // Calcular valor total del inventario
+            $valorTotal = array_reduce($productos, fn($total, $p) => $total + ($p["precio"] * $p["stock"]), 0);
             break;
 
         case 4:
